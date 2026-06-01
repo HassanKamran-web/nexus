@@ -1,0 +1,66 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id    String @id @default(cuid())
+  email String @unique
+  name  String?
+  image String?
+
+  files    File[]
+
+  stripeCustomerId       String?   @unique @map(name: "stripe_customer_id")
+  stripeSubscriptionId   String?   @unique @map(name: "stripe_subscription_id")
+  stripePriceId          String?   @map(name: "stripe_price_id")
+  stripeCurrentPeriodEnd DateTime? @map(name: "stripe_current_period_end")
+  
+  isPro        Boolean  @default(false)
+  usageLimit   Int      @default(5)
+}
+
+model File {
+  id   String @id @default(cuid())
+  name String
+  url  String
+
+  uploadStatus UploadStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  User   User?   @relation(fields: [userId], references: [id])
+  userId String?
+}
+
+enum UploadStatus {
+  PENDING
+  PROCESSING
+  FAILED
+  SUCCESS
+}
+
+
+model ChatSession {
+  id        String        @id @default(uuid())
+  fileId    String
+  title     String
+  createdAt DateTime      @default(now())
+  messages  ChatMessage[]
+}
+
+model ChatMessage {
+  id          String       @id @default(uuid())
+  fileId      String
+  sessionId   String?        // Naya column jo session se jorega
+  role        String       // "user" ya "assistant"
+  content     String       @db.Text
+  createdAt   DateTime     @default(now())
+  chatSession ChatSession?  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
