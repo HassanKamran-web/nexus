@@ -60,18 +60,27 @@ export async function POST(req: NextRequest) {
     );
     const formattedHistory = conversationHistory.rows.reverse();
 
-    const response = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
-      messages: [
-        { 
-          role: "system", 
-          content: `You are Nexus AI, a document assistant. Answer the user query based on the context. If not found, use logical inference to assist the user.\n\n[CONTEXT]\n${context}` 
-        },
-        ...formattedHistory,
-        { role: "user", content: message },
-      ],
-      temperature: 0.3,
-    });
+const response = await groq.chat.completions.create({
+  model: "llama-3.3-70b-versatile",
+  messages: [
+    { 
+      role: "system", 
+      content: `You are Nexus AI, a strict document assistant. 
+
+CRITICAL RULES:
+1. Answer the user's query ONLY and ONLY based on the provided [CONTEXT].
+2. If the answer to the user's question cannot be found directly in the [CONTEXT], or if the question is unrelated to the PDF document, you must politely decline to answer. 
+3. Do NOT use your pre-trained general knowledge or logical inference to answer out-of-context questions.
+4. If you cannot find the answer in the context, respond exactly with: "I can only answer questions related to the uploaded PDF. Your question is not related to this document." (or in the language the user is asking, but keep the excuse strict).
+
+[CONTEXT]
+${context}` 
+    },
+    ...formattedHistory,
+    { role: "user", content: message },
+  ],
+  temperature: 0.1, // Temperature ko 0.3 se kam karke 0.1 kar dein taake model bilkul accurate rahe aur "hallucinate" na kare
+});
 
     const aiAnswer = response.choices[0]?.message?.content || "No response generated.";
 
