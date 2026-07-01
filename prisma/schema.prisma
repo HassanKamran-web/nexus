@@ -15,6 +15,7 @@ model User {
   image String?
 
   files    File[]
+  chatSessions  ChatSession[]
 
   stripeCustomerId       String?   @unique @map(name: "stripe_customer_id")
   stripeSubscriptionId   String?   @unique @map(name: "stripe_subscription_id")
@@ -53,13 +54,16 @@ model ChatSession {
   title     String
   createdAt DateTime      @default(now())
   messages  ChatMessage[]
+
+  userId    String?
+  User      User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model ChatMessage {
   id          String       @id @default(uuid())
   fileId      String
-  sessionId   String?        // Naya column jo session se jorega
-  role        String       // "user" ya "assistant"
+  sessionId   String?      
+  role        String       
   content     String       @db.Text
   createdAt   DateTime     @default(now())
   chatSession ChatSession?  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
