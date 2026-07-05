@@ -109,7 +109,7 @@ export default function Home() {
       </section>
 
       <footer className="py-8 px-4 text-center text-subtext text-xs opacity-50 w-full">
-        © 2026 Nexus AI Automation. Built for Muhammad Kaif Arif.
+        © 2026 Nexus AI. Built for Muhammad Kaif Arif & Hur Abbas.
       </footer>
     </main>
   );
