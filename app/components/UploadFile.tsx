@@ -129,7 +129,7 @@ export default function UploadFile({ onUploadSuccess }: { onUploadSuccess: (id: 
                   onChange={(e) => setFile(e.target.files?.[0] || null)}
                 />
               </label>
-              <p className="text-[10px] text-subtext mt-4 uppercase tracking-widest font-bold">Max size: 10MB</p>
+              <p className="text-[10px] text-subtext mt-4 uppercase tracking-widest font-bold">Max size: 64MB</p>
             </motion.div>
           ) : (
             <motion.div
